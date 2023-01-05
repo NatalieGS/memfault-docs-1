@@ -185,6 +185,7 @@ module.exports = {
             items: [
                 "best_practices/metrics-for-battery-life",
                 "best_practices/low-bandwidth-devices",
+                "best_practices/metrics-crash-free-hours",
             ],
         },
         {
