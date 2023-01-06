@@ -15,14 +15,14 @@ crash-free hours and Memfault.
 
 ## Reliability Engineering Background Material
 
-Before we get to using Memfault to measure fleet reliability, we will discuss two
-points of inspiration for this metric.
+Before we get to using Memfault to measure fleet reliability, we will discuss
+two points of inspiration for this metric.
 
 ### Mean Time Between Failures
 
 We begin by taking some inspiration from reliability engineering. When producing
-a component, a common reliability metric used is Mean Time Between Failures (MTBF). A simple
-but imprecise definition of MTBF is the following:
+a component, a common reliability metric used is Mean Time Between Failures
+(MTBF). A simple but imprecise definition of MTBF is the following[^1]:
 
 $$
 \textit{MTBF} = \frac{\textit{Total Operating Hours}}{\textit{Number of Failures}}
@@ -38,8 +38,8 @@ similar to MTBF we could measure reliability of a device fleet.
 
 ### The Bathtub Curve
 
-The bathtub curve is another concept we can use from reliability
-engineering to think about how to measure failures across a fleet. This curve illustrates
+The bathtub curve[^2] is another concept we can use from reliability engineering
+to think about how to measure failures across a fleet. This curve illustrates
 device reliability over time. Early on, failures are high but decreasing as time
 goes on due to production fixes and improvements. As the early failures are
 fixed random and unsolved failures become the dominant mode. Finally as the
@@ -51,22 +51,37 @@ device stability increases over time. This reaches a plateau due to randomness
 and unsolved failures. The final stage we see failure rate increases as the
 device reaches end of life.
 
-<p align="left">
-  <img width="800" src="/binary-assets/bathtub-curve.png" />
+<p align="center">
+  <img
+    width="800"
+    src="/img/docs/best-practices/crash-free-hours-bathtub-curve.png"
+    alt="Diagram showing the three components that compose the bathtub curve found in reliability engineering."
+  />
 </p>
 
 The middle section of the bathtub curve is important to measuring MTBF. This
 middle section of the curve is where random errors dominate the failure rate,
 leading to the most accurate measure of MTBF.
 
+<!-- prettier-ignore-start -->
+:::info
+
+The bathtub curve is somewhat contested in the field as being too simplistic.
+There is an interesting debate on how to utilize the empirical findings that
+yield curves like these.
+For more information, see these references.[^3]<sup>, </sup>[^4]
+
+:::
+<!-- prettier-ignore-end -->
+
 ## Crash-Free Hours and Memfault
 
-With the ideas of the bathtub curve and MTBF from reliability engineering, we
-can use Memfault to create a suitable yet simple fleet metric to measure device
+With the ideas of MTBF and the bathtub curve from reliability engineering, we
+can use Memfault to create a suitable fleet metric to measure device
 reliability. In the case of IoT device firmware, MTBF's definition does not
 align quite right. Failures caused by device firmware are not represented well
 by random events. IoT device updates require a way to measure reliability across
-updates, which are more reflected in the early portion of the curve.
+updates, which are more represented in the early portion of the curve.
 
 Instead of attempting to measure the random error rate via MTBF, we can shift
 our focus to the early portion of the bathtub curve and focus on measuring the
@@ -113,25 +128,58 @@ compare across time periods and versions.
 
 :::info
 
-At this time, only MCU devices are supported. Android and Linux support will be added to future SDK releases.
+At this time, only MCU devices are supported. Android and Linux support will be
+added to future SDK releases.
 
 :::
 
 ### MCU Devices
 
-Due to changes in the reboot reason tracking subsystem, the MCU SDK requires version
-0.37.0 or higher to collect data for tracking Crash-Free Hours. Once a device is running
-at least version 0.37.0, the SDK will automatically collect the required data in
-a metric called `MemfaultSdkMetric_UnexpectedRebootDidOccur`.
-
+Due to changes in the reboot reason tracking subsystem, the MCU SDK requires
+version 0.37.0 or higher to collect data for tracking Crash-Free Hours. Once a
+device is running at least version 0.37.0, the SDK will automatically collect
+the required data in a metric called
+`MemfaultSdkMetric_UnexpectedRebootDidOccur`.
 
 ## Viewing Crash-Free Hours on Memfault
 
-Crash-Free Hours is not available to be viewed directly on Memfault. However you can create a few charts in the Metrics section to display Total Operational Hours and Total Hours With Crashes. With these two charts, Crash-Free Hours can be calculated.
+Crash-Free Hours is not available to be viewed directly on Memfault. However you
+can create a few charts in the Metrics section to display Total Operational
+Hours and Total Hours With Crashes. With these two charts, Crash-Free Hours can
+be calculated.
 
-:::note
+1. Create a chart to track Total Operational Hours:
 
-Add instructions on how to add the chart
+<p align="center">
+  <img
+    width="400"
+    src="/img/docs/best-practices/crash-free-hours-total-operational.png"
+    alt="Total operational hours metric chart"
+  />
+</p>
 
-:::
+2. Create a chart to track Total Hours With Crashes:
 
+<p align="center">
+  <img
+    width="400"
+    src="/img/docs/best-practices/crash-free-hours-total-w-crash.png"
+    alt="Total hours with a crash metric chart"
+  />
+</p>
+
+Now that we have our charts, we can calculate % of Crash-Free Hours using our
+forumla.
+
+## References and Further Reading
+
+[^1]: [Applied Statistics: MTBF](http://www.applied-statistics.org/mtbf.html#3)
+[^2]:
+    [Applied Statistics: Bathtub Curve](http://www.applied-statistics.org/Glossary/BathTubCurve.html])
+
+[^3]:
+    [A critical look at the bathtub curve](https://www.researchgate.net/profile/Georgia-Ann-Klutke/publication/3152592_A_critical_look_at_the_bathtub_curve/links/00b7d52385fd48960e000000/A-critical-look-at-the-bathtub-curve.pdf)
+
+[^4]:
+    [Comment: "Burn-In" Makes Us Feel Good](https://www.jstor.org/stable/2246263)
+    (_Requires JSTOR account to access_)
